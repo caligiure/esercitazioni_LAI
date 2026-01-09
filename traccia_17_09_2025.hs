@@ -62,3 +62,19 @@ rimuovi x (y:ys)
 
 
 -- Descrivere il meccanismo di valutazione delle espressioni adottato da Haskell
+
+-- Haskell adotta la lazy evaluation: outermost evaluation + sharing of arguments
+-- La valutazione outermost consiste nel valutare per prima la redex (reducible expression) 
+-- più esterna (che non è contenuta in nessun'altra redex)
+-- In questo modo le espressioni non vengono valutate appena vengono incontrate, 
+-- ma solo quando il loro risultato è strettamente necessario per il proseguimento del calcolo.
+-- La outermost evaluation assicura che la valutazione termini sempre, 
+-- se esiste una sequenza di valutazione che lo consente, e inoltre non richiede mai
+-- più step di quanti ne avrebbe richiesti la innermost evaluation.
+-- sharing of arguments consiste nel condividere gli argomenti di una funzione già calcolati, tramite
+-- dei puntatori alle aree di memoria in cui sono stati conservati, in modo da evitare
+-- di doverli caloclare più volte.
+-- I vantaggi della lazy evaluation sono:
+-- Efficienza: Evita calcoli non necessari valutando solo quanto richiesto dal contesto.
+-- Strutture Infinite: Supporta la programmazione con liste infinite, poiché i dati sono generati solo se consumati.
+-- Modularità: Permette di separare nettamente la logica di generazione dei dati (data part) da quella di controllo (control part).

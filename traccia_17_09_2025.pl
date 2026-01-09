@@ -34,3 +34,5 @@ media(Matricola, Valore) :- studente(_, _, Matricola),
 % Riportare la definizione di most general unifier (mgu) di due termini della logica 
 % del primo ordine, descrivendo in pseudocodice un algoritmo in grado di 
 % calcolare il mgu di due termini
+
+% LPTHEORY pag. 13-14 num. 2.9 e 3.2

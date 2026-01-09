@@ -1,0 +1,22 @@
+(:)      :: a -> [a] -> [a]                     1 : [2,3]      -- [1,2,3]
+(++)     :: [a] -> [a] -> [a]                   [1,2] ++ [3,4]   -- [1,2,3,4]
+head     :: [a] -> a                            head [1,2,3]   -- 1
+tail     :: [a] -> [a]                          tail [1,2,3]   -- [2,3]
+last     :: [a] -> a                            last [1,2,3]   -- 3
+init     :: [a] -> [a]                          init [1,2,3]   -- [1,2]
+length :: [a] -> Int                            length [4,5,6]   -- 3
+take   :: Int -> [a] -> [a]                     take 2 [1,2,3,4]   -- [1,2]
+drop   :: Int -> [a] -> [a]                     drop 2 [1,2,3,4]   -- [3,4]
+map     :: (a -> b) -> [a] -> [b]               map (+1) [1,2,3]   -- [2,3,4]
+filter  :: (a -> Bool) -> [a] -> [a]            filter even [1,2,3,4]   -- [2,4]
+elem     :: Eq a => a -> [a] -> Bool            elem 3 [1,2,3]   -- True
+notElem  :: Eq a => a -> [a] -> Bool
+concat  :: [[a]] -> [a]                         concat [[1,2],[3,4]]   -- [1,2,3,4]
+zip     :: [a] -> [b] -> [(a,b)]                zip [1,2] ['a','b']   -- [(1,'a'),(2,'b')]
+unzip   :: [(a,b)] -> ([a],[b])                 unzip [(1,'a'),(2,'b')]   -- ([1,2],['a','b'])
+sum     :: Num a => [a] -> a                    sum [1,2,3]   -- 6
+product :: Num a => [a] -> a
+maximum :: Ord a => [a] -> a
+minimum :: Ord a => [a] -> a
+reverse :: [a] -> [a]
+replicate :: Int -> a -> [a]                    replicate 3 5   -- [5,5,5]

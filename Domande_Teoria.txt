@@ -1,0 +1,184 @@
+Descrivere il meccanismo di valutazione delle espressioni adottato da Haskell
+
+LAZY EVALUATION: componenti dell'espressione valutate solo quando è necessario (non quando si incontrano)
+È il risultato dell'applicazione di:
+VALUTAZIONE OUTERMOST: - assicura sempre la terminazione se esiste una sequenza di valutazione che lo consente 
+                       - non richiede mai più passaggi di quanti ne avrebbe richiesti la innermost evaluation
+SHARING OF ARGUMENTS
+i vantaggi sono: Efficienza, Strutture Infinite, Modularità
+
+
+Haskell adotta la lazy evaluation: outermost evaluation + sharing of arguments
+La valutazione outermost consiste nel valutare per prima la redex (reducible expression) 
+più esterna (che non è contenuta in nessun'altra redex)
+In questo modo le espressioni non vengono valutate appena vengono incontrate, 
+ma solo quando il loro risultato è strettamente necessario per il proseguimento del calcolo.
+La outermost evaluation assicura che la valutazione termini sempre, 
+-- se esiste una sequenza di valutazione che lo consente, e inoltre non richiede mai
+-- più step di quanti ne avrebbe richiesti la innermost evaluation.
+-- sharing of arguments consiste nel condividere gli argomenti di una funzione già calcolati, tramite
+-- dei puntatori alle aree di memoria in cui sono stati conservati, in modo da evitare
+-- di doverli caloclare più volte.
+-- I vantaggi della lazy evaluation sono:
+-- Efficienza: Evita calcoli non necessari valutando solo quanto richiesto dal contesto.
+-- Strutture Infinite: Supporta la programmazione con liste infinite, poiché i dati sono generati solo se consumati.
+-- Modularità: Permette di separare nettamente la logica di generazione dei dati (data part) da quella di controllo (control part).
+
+
+
+
+
+Quale tra i seguenti predicati implementa correttamente la negazione come fallimento not/1?
+(NEGAZIONE CUT - FAIL)
+
+neg1(X):- X, !, fail.
+neg1(_).
+
+neg2(X):- X, fail, !.
+neg2(_).
+
+neg3(X):- call(X), fail.
+neg3(_).
+
+il predicato neg1/1 implementa correttamente la negazione come fallimento in quanto se il predicato X ha successo allora
+si esegue la cut per bloccare qualsiasi altra scelta e si forza il fallimento con fail. Altrimenti, se X fallisce, il predicato
+ha successo per not(X).
+
+PAG. 9 di Prolog
+
+Se X è vero: Prolog entra nella prima regola. Esegue X (successo). Incontra il Cut !. Questo "taglia" le alternative, impedendo a Prolog di usare la seconda regola (neg1(_)). Poi incontra fail e fallisce. Poiché le alternative sono state tagliate, l'intero predicato fallisce. -> Risultato: False.
+
+Se X è falso: Prolog entra nella prima regola. Prova X, ma fallisce. Poiché fallisce prima di arrivare al Cut, il backtracking è ancora attivo. Prolog prova la seconda regola neg1(_), che è sempre vera. -> Risultato: True.
+
+
+
+
+
+14 gennaio 2023
+Prolog
+
+Esercizio 6
+Cosa è una sostituzione? Come si applica una sostituzione ad una espressione E? Come si compongono due
+sostituzioni?
+
+PAG. 11-12 LPTHEORY
+
+
+Sostituzione è MAPPING valori - termini
+Le sostit. vanno applicate simultaneamente su tutti i termini e non una alla volta
+È possibile comporre due sostituzioni: S1 o S2
+LA COMPOSIZIONE NON È COMMUTATIVA
+
+
+
+
+
+12 giugno 2024
+
+dare la definizione di Logic entailment e descrivere l'algoritmo di logical entailmnet tra due espressioni proposizionali
+
+Algorimto semantico: si potrebbe pensare di utilizzare le 
+tabelle di verità,generando tutte le possibili interpretazioni degli atomi ma questo è un processo 
+computazionalmente costoso (è esponenziale dato che per n atomi ci saranno 2^n righe, cioè interpretazioni).
+
+Algoritmo del least fixed point:
+La seconda opzione è quella di costruire dei sistemi di inferenza costituiti da clausole definite, cioè formule logiche
+che possono avere solo due forme
+    - q
+    - p1 and p2 and ...pk -> q
+si parte inizialmente da un insieme vuoto
+si costruisce poi una funzione monotona f(Y) che aggiunge all'insieme Y tutti gli atomi che appaiono come clausole unitarie
+e tutti gli atomi a tali che esiste una regola p1 and ... pk -> a dove tutti i pi sono già presenti in Y.
+questo processo continua fino a quando l'applicazione della funzione non aggiunge più atomi. 
+Otteniamo quindi il least fixed point F(x) = x.
+alla fine, un atomo q sarà conseguenza logica del programma se e solo se appartiene al minimo punto fisso
+
+Il minimo punto fisso è l’insieme di tutti gli atomi che seguono logicamente dalle leggi del programma
+
+
+
+
+
+17 gennaio 2025
+
+Riportare la definizione formale di mgu (most general unifier) di due termini della logica del primo ordine. 
+Spiegare il modivo per cui l'algoritmo di risoluzione di prolog fa riferimento al mgu invece che a un normale unificatore nel processo di risoluzione.
+
+MGU è il più generico unificatore possibile di 2 termini
+Unificazione è una sostituzione che rende sintatticamente identici i 2 termini
+Sostituzione è una mappatura da variabili a termini
+
+Omega è un MGU deitermini u e t se, per ogni altro unificatore Sigma di t e u,
+esiste una sostituzione Gamma tale che Sigma = Omega combinato con Gamma
+
+Definizione di Massimo (pag. 13 di LPTHEORY):
+Se due termini t1 e t2 sono unificabili,
+esiste un unificatore più generale (Most General Unifier, o MGU) S. Questo significa che:
+• t1S = t2S
+• Per qualisasi altra sostituzione SJ , se t1SJ = t2SJ , allora SJ ⪯ S. In altre parole ,
+qualsiasi altra sostituzione che unifica t1 e t2 è meno generale (o equivalente) rispetto a S.
+
+
+Prolog lo usa perchè L'MGU applica solo le restrizioni strettamente necessarie
+per rendere i termini identici, lasciando le variabili rimanenti il più libere 
+possibile. Se si utilizzasse un unificatore più specifico (non mgu), 
+si rischierebbe di imporre vincoli arbitrari che non sono richiesti dalla 
+logica del programma, impedendo potenzialmente di trovare soluzioni valide 
+in passaggi successivi.
+
+Inoltre, lo usa per efficienza dello Spazio di Ricerca: 
+Prolog esplora lo spazio di ricerca tramite backtracking. 
+Usare l'MGU riduce la necessità di backtracking inutile. 
+Se si scegliesse un unificatore troppo specifico che poi si rivela errato, 
+il sistema dovrebbe tornare indietro e provare altre strade.
+
+
+
+
+
+19 giugno 2023
+Riportare la definizione di “safe cut”
+
+La safe cut è un uso corretto della cut, che non modifica il funzionamento 
+del prorgamma, ma serve solo per evitare che prolog faccia ricerche inutili.
+ES:
+max(A,B,A) :- A >= B, !.
+max(_,B,B).
+
+Il programma funzionerebbe anche senza la cut, ma non esiste un motivo logico
+per cui il prorgamma dovrebbe provare la seconda regola in caso di successo della prima.
+
+
+
+
+
+Pseudocodice dell'algoritmo di Robinson (di unificazine) per trovare un MGU
+
+MGU(s, t):
+    Sol = {}
+
+    if s = t 
+        then return Sol
+
+    if s è una variabile
+        if s occurs in t
+            then return fail
+        else
+            return Sol = {s -> t}
+        
+    if t è una variabile
+        if t occurs in s
+            then return fail
+        else
+            return Sol = {t -> s}
+
+    if t e s sono termini composti
+        if t e s hanno nome di funtore diverso oppure hanno arità diversa
+            then fail
+        else
+            per ogni coppia di termini si e ti esegui MGU(si, ti) 
+                se MGU ha successo, aggiungi i risultati a Sol
+                se fallisce ritorna fallimento
+        return Sol
+
+    else return fail
