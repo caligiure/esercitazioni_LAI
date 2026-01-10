@@ -59,4 +59,4 @@ isCliqueNode u ns g =
 
 -- (\f x -> f (f (x*2)))
 
--- Num t => (t -> t) -> t-> t
+-- Num t => (t -> t) -> t -> t

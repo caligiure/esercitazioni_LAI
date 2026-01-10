@@ -25,7 +25,7 @@ permutazioni xs = [x:ps | x <- xs, ps <- permutazioni (rimuovi x xs)]
 
 
 
--- Qual'è il tipo della seguente espressione HAskell? Motivare la risposta.
+-- Qual'è il tipo della seguente espressione Haskell? Motivare la risposta.
 
 -- (\f x -> f (f x))
 f3 :: (t -> t) -> t -> t

@@ -13,15 +13,18 @@ prod _ 0 = []
 prod x k = k*x : prod x (k-1)
 
 -- versione con List Comprehension:
-
 convertiLista2 :: (Enum a, Num a) => [(a, a)] -> [[a]]
 convertiLista2 xs = [ [x*i | i <- [1..k]] | (x, k) <- xs ]
+
+-- soluzione prof:
+convertiLista3 :: [(Integer, Integer)] -> [[Integer]]
+convertiLista3 = map (\(x, k) -> [x*i | i <- [1..k]])
 
 
 
 -- Si consideri il tipo di dati Graph definito come segue.
 data Map k a
-type Node = Int 
+type Node = Int
 type Graph = Map Node [Node]
 -- dove su Map è definita la seguente funzione: lookup :: Ord k => k -> Map k a -> Maybe a
 -- Implementare una funzione cricca:: [Node] -> Graph -> Bool
@@ -33,3 +36,18 @@ type Graph = Map Node [Node]
 -- Si assuma che il grafo sia non orientato come nell'esempio 
 -- (se x è nella lista degli adiacenti di y allora y è nella lista degli adiacenti di x)
 
+cricca :: [Node] -> Graph -> Bool
+cricca xs g = all (\x -> connesso x xs g) xs
+
+connesso :: Node -> [Node] -> Graph -> Bool
+connesso n xs g = 
+    case Data.Map.lookup n g of
+        Nothing         -> False -- n non è un nodo del grafo
+        Just adjListOfN -> all (\x -> x == n || elem x adjListOfN) xs
+
+
+
+-- Qual'è il tipo della seguente espressione Haskell? Motivare la risposta.
+-- (\f x -> f (f (x*2)))
+
+-- Num a => (a -> a) -> a -> a
