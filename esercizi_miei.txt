@@ -1,0 +1,69 @@
+1) Supponiamo di avere una base di conoscenza con:
+
+    arco(X, Y): esiste un collegamento da X a Y.
+
+    valore(X, V): il nodo X ha valore numerico V.
+
+Definisci il predicato percorso_salita(Start, Path) che è vero se Path è una lista di nodi che inizia con Start e rappresenta un cammino nel grafo in cui ogni nodo successivo ha un valore strettamente maggiore del precedente.
+
+percorso_salita(S, [S]).
+
+percorso_salita(A, [A, B|Resto]) :- arco(A, B), valore(A, VA), valore(B, VB), VB > VA, percorso_salita(B, [B|Resto]).
+
+
+
+2) Scrivi una funzione filtraEspandi che prende in input una lista di coppie (Int, Char). La funzione deve restituire una stringa unica (lista di Char) costruita seguendo queste regole:
+
+    Se il numero n nella coppia è pari, il carattere va ripetuto n volte.
+
+    Se il numero n nella coppia è dispari, la coppia va completamente ignorata.
+
+Firma: filtraEspandi :: [(Int, Char)] -> String
+
+filtraEspandi xs = concatMap (\(n, c) -> ripeti n c) (filtraPari xs)
+	where 
+		filtraPari = filter (\(n, c) -> n > 0 && (mod n 2) == 0)
+
+
+filtraEspandi2 xs = concat [ripeti n c | (n, c) <- xs, n > 0, (mod n 2) == 0]
+
+
+filtraEspandi3 [] = []
+filtraEspandi3 ((n,c):xs)
+	| n > 0 && (mod n 2) == 0	= ripeti n c ++ filtraEspandi3 xs
+	| otherwise			= filtraEspandi3 xs
+
+ripeti 0 c = []
+ripeti n c = c : (ripeti (n-1) c)
+
+
+
+3) atleta(Nome, Squadra, Velocità)
+
+Definire il predicato squadra_staffetta(ListaVelocità, Squadra, ListaAtleti). Il predicato deve trovare una ListaAtleti tale che:
+
+    Ogni atleta corrisponda, in ordine, alla velocità richiesta in ListaVelocità (l'atleta deve avere velocità >= a quella richiesta).
+
+    Vincolo Importante: Tutti gli atleti devono appartenere alla stessa Squadra.
+
+    La Squadra può essere data in input (controllo) o essere una variabile (generazione).
+
+squadra_staffetta([], _, []).
+squadra_staffetta([V|RestoV], S, [A|RestoA]) :- atleta(A, S, Vel), Vel >= V, squadra_staffetta(RestoV, S, RestoA).
+
+
+
+4) Sei alla cassa del supermercato con un budget limitato. I prodotti scorrono sul nastro. Hai una lista di coppie (String, Float) che rappresentano (NomeProdotto, Prezzo).
+
+Obiettivo: Scrivi la funzione acquista :: Float -> [(String, Float)] -> [String]. La funzione riceve il budget e la lista della spesa. Scorre la lista e:
+
+    Se il budget è sufficiente per l'articolo corrente, lo compra (lo mette nella lista output) e sottrae il prezzo dal budget.
+
+    Se il budget NON è sufficiente, salta l'articolo (non lo compra) e prova a vedere se riesce a comprare i successivi con i soldi rimasti.
+
+acquista 0, _ = []
+
+acquista b, ((a, p):xs)
+	| b >= p	= a : acquista (b-p), xs
+	| otherwise	= acquista b, xs
+

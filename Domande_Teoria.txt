@@ -143,7 +143,7 @@ La safe cut è un uso corretto della cut, che non modifica il funzionamento
 del prorgamma, ma serve solo per evitare che prolog faccia ricerche inutili.
 ES:
 max(A,B,A) :- A >= B, !.
-max(_,B,B).
+max(_,B,B) :- X < Y.
 
 Il programma funzionerebbe anche senza la cut, ma non esiste un motivo logico
 per cui il prorgamma dovrebbe provare la seconda regola in caso di successo della prima.
@@ -152,7 +152,7 @@ per cui il prorgamma dovrebbe provare la seconda regola in caso di successo dell
 
 
 
-Pseudocodice dell'algoritmo di Robinson (di unificazine) per trovare un MGU
+Pseudocodice dell'algoritmo di Robinson (di unificazione) per trovare un MGU
 
 MGU(s, t):
     Sol = {}

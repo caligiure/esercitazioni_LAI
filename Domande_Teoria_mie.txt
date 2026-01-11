@@ -1,0 +1,100 @@
+1) Descrivere il meccanismo di valutazione delle espressioni adottato da Haskell.
+
+Per valutare le espressioni, Haskell utilizza un meccanismo chiamato Lazy Evaluation, basato sul principio di valutare le componenti di un'espressione solo quando è strettamente necessario (e non man mano che le si incontra nell'espressione).
+La lazy evaluation è il risultato dell'applicazione di due tecniche: Outermost Evaluation e Sharing of Arguments
+
+Outermost Evaluation: è una tecnica che impone di valutare sempre per prima la redex (espressione riducibile) più esterna, cioè quella che non è contenuta all'interno di altre redex. Questa tecnica si contrappone alla innermost evaluation, che invece impone di valutare sempre la redex più 	interna, cioè quella che non contiene nessun altra redex al suo interno.
+La outermost evaluation garantisce due vantaggi: 
+- assicura sempre la terminazione della valutazione di un'espressione, se esiste una sequenza di step di valutazione dei suoi componenti che lo consente
+- non richiede mai più step di quanti ne richiederebbe la innermost evaluation
+
+Sharing of Arguments: Haskell conserva i puntatori alle aree di memoria che contengono i risultati della valutazione delle componenti di un'espressione, in modo tale da poterli recuperare all'occorrenza, evitando così di dover ricalcolare più volte lo stesso risultato
+
+I vantaggi della lazy evaluation sono: efficienza, capacità di supportare e lavorare con strutture dati infinite, modularità (separazione tra la logica di controllo e quella di generazione dei dati)
+
+
+
+2) Quale tra i seguenti predicati implementa correttamente la negazione come fallimento not/1?
+
+not(X) = X, !, fail.
+not(_).
+
+
+
+3) Cosa è una sostituzione? Come si applica una sostituzione ad una espressione E? Come si compongono due
+sostituzioni?
+
+Una sostituzione è un mapping di valori ai termini di un'espressione, cioè un insieme di assegnamenti (v -> t), ciascuno dei quali definisce quale valore assumerà uno specifico termine di un'espressione.
+Per applicare una sostituzione a un'espressione, tutti gli assegnamenti definiti, se sono applicabili, devono essere applicati simultaneamente. Se un assegnamento riguarda un termine che non compare nell'espressione, allora non sarà applicato.
+Per comporre due sostituzioni, ad esempio S1 o S2, vengono applicati prima tutti gli assegnamenti di S1 sull'espressione originale, e successivamente, sul risultato ottenuto, vengono applicati tutti gli assegnamenti di S2.
+Inoltre, è importante notare che la composizione di sostituzioni non è un'operazione commutativa.
+
+
+
+4) Dare la definizione di Logic entailment e descrivere l'algoritmo di logical entailmnet tra due espressioni proposizionali.
+
+Un'espressione E2 è conseguenza logica di un'altra espressione E1 se, per tutte le possibili interpretazioni definite dalle regole del prorgamma, risulta che in tutti i casi in cui E1 è vera, anche E2 è vera.
+
+L'algoritmo semantico di valutazione della conseguenza logica consiste nell'utilizzare le tabelle di verità per valutare tutte le possibili interpretazioni degli atomi, ma questo è computazionalmente costoso (per n atomi si hanno 2^n interpretazioni).
+
+Un algoritmo più efficiente è quello del least fixed point (LFP), che prevede che il programma contenga solo clausole definite, cioè espressioni del tipo:
+q
+oppure
+p1 and p2 and ... and pn => q
+L'algoritmo inizia definendo come soluzione Y={}.
+Si definisce poi una funzione monotona f(Y) che aggiunge alla soluzione tutte le clausole unitarie (q) e tutte le clausole che risultano vere tramite una clausola p1 and p2 and ... and pn => q tale che tutti gli atomi p1...pn sono già presenti nell'insieme soluzione.
+La funzione f(Y) viene applicata ripetutamente, finchè non è più possibile aggiungere altri atomi alla soluzione.
+In questo modo, la soluzione ottenuta, cioè il LFP, contiene tutti gli atomi che conseguono logicamente dalle regole del programma.
+
+
+
+5) Riportare la definizione formale di mgu (most general unifier) di due termini della logica del primo ordine e spiegare il modivo per cui l'algoritmo di risoluzione di prolog fa riferimento al mgu invece che a un normale unificatore nel processo di risoluzione.
+
+Un unificatore di due termini è un'assegnazione tale che rende i due termini identici.
+Un unificatore S1 di due termini, si dice più grande di un altro unificatore S2 (per gli stessi termini), se esiste un terzo unificatore S3 (per gli stessi termini) tale che S1 può essere ottenuto come composizione di S2 con S3.
+L'MGU di due termini è un unificatore tale che risulta >= di qualsiasi altro unificatore di quella coppia di termini.
+
+Prolog utilizza l'MGU perchè garantisce che non vengano applicate sostituzioni superflue, che imporrebbero dei vincoli non necessari, i quali potrebbero impedire a Prolog di trovare altre soluzioni nei passaggi successivi.
+Inoltre, questo ha anche il vantaggio di ridurre lo spazio di ricerca rendendo più efficiente la ricerca di soluzioni tramite backtracking.
+
+
+
+6) Pseudocodice dell'algoritmo di Robinson (di unificazione) per trovare un MGU
+
+MGU(s, t):
+	Sol = {}
+	
+	Se s = t : return Sol
+
+	Se s è una variabile:
+		se s occorre in t (occur check): return fail
+		return Sol = {s -> t}
+
+	Se t è una variabile:
+		se t occorre in s (occur check): return fail
+		return Sol = {t -> s}
+
+	Se s e t sono termini composti:
+		Se s e t hanno nome di funtore diverso o arità diversa: return fail
+		Per ogni coppia di termini si e ti:
+			esegui MGU(si, ti)
+			se MGU(si, ti) fallisce: return fail
+			aggiungi il risultato di MGU(si, ti) a Sol
+		return Sol
+
+	Altrimenti return fail
+
+
+
+7) Riportare la definizione di “safe cut”
+
+La safe cut è un utilizzo della cut che non modifica il funzionamento del programma, ma serve solo per renderlo più efficiente, evitando che Prolog effettui la ricerca di soluzioni quando è inutile farlo.
+Es. safe cut:
+max(A, B, A) :- A >= B, !.
+max(_, B, B) :- X < Y.
+
+Es. unsafe cut:
+
+max(A, B, A) :- A >= B, !.
+max(_, B, B).
+
